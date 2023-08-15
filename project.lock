@@ -1,0 +1,8 @@
+build_readme:
+  cmd: python -m spacy run build_readme
+  script:
+    - python scripts/build_readme.py --yaml_file project.yml --readme_file README.md
+  deps: []
+  outs: []
+  spacy_version: 3.6.1
+  spacy_git_version: 458bc5f45
