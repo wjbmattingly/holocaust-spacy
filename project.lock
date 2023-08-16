@@ -6,3 +6,103 @@ build_readme:
   outs: []
   spacy_version: 3.6.1
   spacy_git_version: 458bc5f45
+build_corpus:
+  cmd: python -m spacy run build_corpus
+  script:
+    - python scripts/build_corpus.py
+  deps: []
+  outs: []
+  spacy_version: 3.5.3
+  spacy_git_version: '512241e12'
+build_floret:
+  cmd: python -m spacy run build_floret
+  script:
+    - python scripts/build_floret.py corpus/corpus.txt embeddings/holocaust.floret
+  deps: []
+  outs: []
+  spacy_version: 3.4.4
+  spacy_git_version: 77833bfef
+floret2spacy:
+  cmd: python -m spacy run floret2spacy
+  script:
+    - python -m spacy init vectors en embeddings/holocaust.floret embeddings/holocaust
+      --mode floret
+  deps: []
+  outs: []
+  spacy_version: 3.5.3
+  spacy_git_version: '512241e12'
+build:
+  cmd: python -m spacy run build
+  script:
+    - python scripts/build_pipeline.py --name holocaust --version 0.0.0 --description
+      'This is a pipeline designed to work with documents from the Holocaust. It allows
+      users to identify Holocaust-specific data, such as CAMP and GHETTO. Its vectors
+      are also trained on Holocaust-specific data.' --author 'W.J.B. Mattingly' --output_directory
+      holocaust_rules --lang en
+  deps: []
+  outs: []
+  spacy_version: 3.5.3
+  spacy_git_version: '512241e12'
+build_ml:
+  cmd: python -m spacy run build_ml
+  script:
+    - python scripts/build_pipeline_ml.py --name holocaust_md --version 0.0.0 --description
+      'This is a pipeline designed to work with documents from the Holocaust. It allows
+      users to identify Holocaust-specific data, such as CAMP and GHETTO. Its vectors
+      are also trained on Holocaust-specific data.' --author 'W.J.B. Mattingly' --output_directory
+      holocaust_md --lang en
+  deps: []
+  outs: []
+  spacy_version: 3.5.3
+  spacy_git_version: '512241e12'
+package:
+  cmd: python -m spacy run package
+  script:
+    - python scripts/build_meta.py temp_output/holocaust_md/model-best/meta.json --name
+      holocaust_md --version 0.0.4 --author 'W.J.B. Mattingly' --description 'This
+      is a pipeline designed to work with documents from the Holocaust. It allows
+      users to identify Holocaust-specific data, such as CAMP and GHETTO. Its vectors
+      are also trained on Holocaust-specific data.'
+    - python -m spacy package temp_output/holocaust_md/model-best packages --build
+      sdist,wheel --code ./scripts/components.py
+  deps: []
+  outs: []
+  spacy_version: 3.6.1
+  spacy_git_version: 458bc5f45
+build_rules:
+  cmd: python -m spacy run build_rules
+  script:
+    - python scripts/build_pipeline_rules.py --name holocaust --version 0.0.3 --description
+      'This is a pipeline designed to work with documents from the Holocaust. It allows
+      users to identify Holocaust-specific data, such as CAMP and GHETTO. Its vectors
+      are also trained on Holocaust-specific data.' --author 'W.J.B. Mattingly' --output_directory
+      temp_output/rules --lang en
+  deps: []
+  outs: []
+  spacy_version: 3.6.1
+  spacy_git_version: 458bc5f45
+train:
+  cmd: python -m spacy run train
+  script:
+    - python -m spacy train configs/config_md.cfg --gpu-id 0 --output temp_output/holocaust_md
+  deps: []
+  outs: []
+  spacy_version: 3.6.1
+  spacy_git_version: 458bc5f45
+push2hub:
+  cmd: python -m spacy run push2hub
+  script:
+    - python -m spacy huggingface-hub push packages/en_holocaust_md-0.0.4/dist/en_holocaust_md-0.0.4-py3-none-any.whl
+  deps: []
+  outs: []
+  spacy_version: 3.6.1
+  spacy_git_version: 458bc5f45
+build_env:
+  cmd: python -m spacy run build_env
+  script:
+    - python scripts/build_env.py --env_name 'spacy36-gpu-test2' --python_version
+      3.9
+  deps: []
+  outs: []
+  spacy_version: 3.6.1
+  spacy_git_version: 458bc5f45

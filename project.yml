@@ -1,27 +1,56 @@
-title: "PROJECT TITLE"
-description: "PROJECT DESCRIPTION"
-yml_description: > 
-  The [`project.yml`](project.yml) defines the data assets required by the
-  project, as well as the available commands and workflows. For details, see the
-  [spaCy projects documentation](https://spacy.io/usage/projects).
+title: "Holocaust spaCy"
+description: "This is a pipeline designed to work with documents from the Holocaust. It allows users to identify Holocaust-specific data, such as CAMP and GHETTO. Its vectors are also trained on Holocaust-specific data."
 
 
 # Variables can be referenced across the project.yml using ${vars.var_name}
 vars:
-  name: ""
+  # pipeline metadata
+  version: "0.0.4"
+  name: "holocaust"
   lang: "en"
-  author: ""
-  description: ""
-  output_directory: ""
+  author: "W.J.B. Mattingly"
+  description: "This is a pipeline designed to work with documents from the Holocaust. It allows users to identify Holocaust-specific data, such as CAMP and GHETTO. Its vectors are also trained on Holocaust-specific data."
+  license: "mit"
+  url: ""
+  email: ""
+
+  # output directories
+  output_directory_root: "temp_output"
+  output_directory_rules: "${vars.output_directory_root}/holocaust_rules"
+  output_directory_sm: "${vars.output_directory_root}/holocaust_sm"
+  output_directory_md: "${vars.output_directory_root}/holocaust_md"
+  output_directory_lg: "${vars.output_directory_root}/holocaust_lg"
+  output_directoroy_trf: "${vars.output_directory_root}/holocaust_trf"
+
+  # config variables
+  config_dir: "configs"
+  config_sm: "${vars.config_dir}/config_sm.cfg"
+  config_md: "${vars.config_dir}/config_md.cfg"
+  config_lg: "${vars.config_dir}/config_lg.cfg"
+  config_trf: "${vars.config_dir}/config_trf.cfg"
+
+  # training data
   train: "train.json"
   dev: "dev.json"
-  version: "0.0.0"
+
+
   # Set a random seed
   seed: 0
   # Set your GPU ID, -1 is CPU
-  gpu_id: -1
+  gpu_id: 0
   # Vectors model for train-with-vectors
-  vectors_model: "en_core_web_md"
+  corpus_file: "corpus/corpus.txt"
+  floret_file: "embeddings/holocaust.floret"
+  floret_spacy: "embeddings/holocaust"
+  components: "./scripts/components.py"
+
+  #environment variables
+  env_name: "spacy36-gpu"
+  cuda_version: "11.8.0"
+  python_version: 3.9
+  installer: "conda" # conda or pip
+  os: "windows" # windows, mac, linux
+  platform: "x86" # x86 or m1
 
 # These are the directories that the project needs. The project CLI will make
 # sure that they always exist.
@@ -39,21 +68,67 @@ assets:
 # run them via "spacy project run [workflow]". If a commands's inputs/outputs
 # haven't changed, it won't be re-run.
 workflows:
-  all:
-    - build
-  start-project:
-    - build_readme
+  # all:
+  #   - build_corpus
+  #   - build_floret
+  #   - floret2spacy
+  #   - build_rules
+  all-vectors:
+    - train
+    - package
+    - push2hub
+  # build_env:
+  #   - build_env
+    # - install_requirements
 
 # Project commands, specified in a style similar to CI config files (e.g. Azure
 # pipelines). The name is the command name that lets you trigger the command
 # via "spacy project run [command] [path]". The help message is optional and
 # shown when executing "spacy project run [optional command] [path] --help".
 commands:
-  - name: "build_readme"
-    help: "Build the project's README.md"
+# Commands for Building Vectors
+  - name: "build_floret"
+    help: "Creates the floret embeddings for the .md model"
     script:
-      - "python scripts/build_readme.py --yaml_file project.yml --readme_file README.md"
-  - name: "build"
+      - "python scripts/build_floret.py ${vars.corpus_file} ${vars.floret_file}"
+  - name: "floret2spacy"
+    help: "Create a base spaCy pipeline with the floret embeddings"
+    script:
+      - "python -m spacy init vectors ${vars.lang} ${vars.floret_file} ${vars.floret_spacy} --mode floret"
+
+# Commands for Building Rules-Based Pipeline
+  - name: "build_rules"
     help: "Build Pipeline"
     script:
-      - "python scripts/build_pipeline.py --name ${vars.name} --version ${vars.version} --description '${vars.description}' --author '${vars.author}' --output_directory ${vars.output_directory} --lang ${vars.lang}"
+      - "python scripts/build_pipeline_rules.py --name ${vars.name} --version ${vars.version} --description '${vars.description}' --author '${vars.author}' --output_directory ${vars.output_directory_root}/rules --lang ${vars.lang}"
+  # - name: "build_ml"
+  #   help: "Build Pipeline"
+  #   script:
+  #     - "python scripts/build_pipeline_ml.py --name ${vars.name} --version ${vars.version} --description '${vars.description}' --author '${vars.author}' --output_directory ${vars.output_directory_md} --lang ${vars.lang}"
+
+# Commands for Training and Packaging
+  - name: train
+    help: "Train model"
+    script:
+      - "python -m spacy train ${vars.config_md} --gpu-id ${vars.gpu_id} --output ${vars.output_directory_md}"
+  - name: "package"
+    help: "Package the Pipeline"
+    script:
+      - "python scripts/build_meta.py ${vars.output_directory_md}/model-best/meta.json --name ${vars.name}_md --version ${vars.version} --author '${vars.author}' --description '${vars.description}'"
+      - "python -m spacy package ${vars.output_directory_md}/model-best packages --build sdist,wheel --code ${vars.components}"
+  
+  - name: push2hub
+    help: "Pushes the new version to HuggingFace Hub"
+    script:
+      - "python -m spacy huggingface-hub push packages/${vars.lang}_${vars.name}_md-${vars.version}/dist/${vars.lang}_${vars.name}_md-${vars.version}-py3-none-any.whl"
+
+
+# Commands for Building Project
+  - name: "build_corpus"
+    help: "Downloads the collection of oral testimonies from HuggingFace and then creates a corpus.txt file for training floret embeddings"
+    script:
+      - "python scripts/build_corpus.py"
+  - name: "build_env"
+    help: "Builds the environment for training on GPU"
+    script:
+      - "python scripts/build_env.py --env_name '${vars.env_name}' --python_version ${vars.python_version}"

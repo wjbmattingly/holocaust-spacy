@@ -1,0 +1,152 @@
+gun
+guns
+rifle
+rifles
+pistol
+pistols
+revolver
+revolvers
+shotgun
+shotguns
+knife
+knives
+sword
+swords
+dagger
+daggers
+machete
+machetes
+bayonet
+bayonets
+grenade
+grenades
+bomb
+bombs
+mines
+missile
+missiles
+rocket
+rockets
+launcher
+launchers
+flamethrower
+flamethrowers
+cannon
+cannons
+mortar
+mortars
+tank
+tanks
+artillery
+machine gun
+machine guns
+submachine gun
+submachine guns
+assault rifle
+assault rifles
+sniper rifle
+sniper rifles
+handgun
+handguns
+anti-tank rifle
+anti-tank rifles
+anti-aircraft gun
+anti-aircraft guns
+torpedo
+torpedoes
+depth charge
+depth charges
+naval mine
+naval mines
+bazooka
+bazookas
+howitzer
+howitzers
+field gun
+field guns
+anti-tank gun
+anti-tank guns
+fighter plane
+fighter planes
+bomber
+bombers
+warship
+warships
+destroyer
+destroyers
+aircraft carrier
+aircraft carriers
+submarine
+submarines
+minefield
+minefields
+carbine
+carbines
+stun grenade
+stun grenades
+flashbang
+flashbangs
+naval gun
+naval guns
+battlecruiser
+battlecruisers
+frigate
+frigates
+patrol boat
+patrol boats
+corvette
+corvettes
+cruiser
+cruisers
+Luger
+Lugers
+Springfield rifle
+Springfield rifles
+Lee-Enfield
+Lee-Enfields
+M1 Garand
+M1 Garands
+M1 Carbine
+M1 Carbines
+Thompson submachine gun
+Thompson submachine guns
+Sten
+Stens
+MG42
+MG42s
+Panzerfaust
+Panzerfausts
+Panzer
+Panzers
+Katyusha rocket launcher
+Katyusha rocket launchers
+Tiger tank
+Tiger tanks
+Sherman tank
+Sherman tanks
+Spitfire
+Spitfires
+Mustang
+Mustangs
+B-17 Flying Fortress
+B-17 Flying Fortresses
+Zero fighter
+Zero fighters
+U-boat
+U-boats
+Focke-Wulf
+Focke-Wulfs
+Messerschmitt
+Messerschmitts
+Hawker Hurricane
+Hawker Hurricanes
+V-1 rocket
+V-1 rockets
+V-2 rocket
+V-2 rockets
+radar
+sonar
+barbed wire
+trench
+bunker
+pillbox

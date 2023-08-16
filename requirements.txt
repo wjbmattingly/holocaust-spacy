@@ -1,0 +1,4 @@
+spacy
+floret
+pandas
+spacy-huggingface-hub
